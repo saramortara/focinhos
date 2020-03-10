@@ -1,11 +1,6 @@
 ##### Testando diferenca de N de lamelas entre machos e femeas
 ## codigo por Sara Mortara, 1a versao em 20.01.2019
-## atualizado em 17.03
- 
-# # checando o diretorio de trabalho
-# getwd()
-# # deve estar na pasta de analise de dados, se nao estiver ai sim?
-# setwd("C:/Users/morei/OneDrive/Documentos/narinas/analise_dados/R")
+## abrir o arquivo .Rproj e seguir este codigo
 
 ## carregando os pacotes
 # se nao tiver os pacotes usar:
@@ -18,7 +13,7 @@ library(gridExtra)
 library(ggpubr)
 
 ## lendo os dados
-dados <- read.csv("data/dados.csv", sep=';')
+dados <- read.csv("data/Dados.csv", sep = ';')
 
 # inspecao dos dados
 head(dados) # seis primeiras linhas
@@ -43,25 +38,29 @@ hist(dados$Cpmm)
 plot(density(dados$Cpmm))
 boxplot(dados$Cpmm)
 
+summary(dados)
+
 head(dados)
 
 # mudando o PMF27 de femea para macho
-dados[dados$exemplar=="PMF27",4] <- "M"
+dados[dados$exemplar == "PMF27",4] <- "M"
+
 # checando
-dados[dados$exemplar=="PMF27",4]
+dados[dados$exemplar == "PMF27",4]
 
 # selecionando colunas
 # criando objeto com as colunas das lamelas
-lamelas <- dados[,c(2,3)]
+lamelas <- dados[, c(2,3)]
 
 ## criando coluna com a media de N de lamelas
-dados$lamelas.med <- rowMeans(lamelas, na.rm=TRUE)
+dados$lamelas.med <- rowMeans(lamelas, na.rm = TRUE)
 
 head(dados)
 
-# olhando para o padrao dos daods
-plot(lamelas.med ~ Cpmm, data=dados, 
-     col=dados$sexo)
+# olhando para o padrao dos dados, um grafico rapido
+plot(lamelas.med ~ Cpmm, 
+     data = dados,
+     col = dados$sexo)
 
 # y ~ x1 + x2
 # lamelas ~ Cpmm + sexo
@@ -73,20 +72,22 @@ plot(lamelas.med ~ Cpmm, data=dados,
 ## fazendo os modelos 
 
 # hipotese nula
-m0 <- lm(lamelas.med ~ 1, data=dados) 
+m0 <- lm(lamelas.med ~ 1, data = dados) 
 # hipotese de que apenas sexo afeta N lamelas
-m1 <- lm(lamelas.med ~ sexo, data=dados)
+m1 <- lm(lamelas.med ~ sexo, data = dados)
 # hipotese do comprimento
-m2 <- lm(lamelas.med ~ Cpmm, data=dados)
+m2 <- lm(lamelas.med ~ Cpmm, data = dados)
 # hipotese do comprimento e sexo
-m3 <- lm(lamelas.med ~ sexo + Cpmm, data=dados)
+m3 <- lm(lamelas.med ~ sexo + Cpmm, data = dados)
 
 m0
 m1
 m2
 m3
 
-AICctab(m0, m1, m2, m3, weights=TRUE, base=TRUE)
+AICctab(m0, m1, m2, m3, weights = TRUE, base = TRUE)
+
+summary(m3)
 
 ### fazendo o grafico do resultado dos modelos com ggplot2
 
@@ -99,75 +100,84 @@ tamp <- 3
 
 ### grafico do modelo
 #X11()
-r <- ggplot(dados, aes(x=Cpmm, y=lamelas.med, color=sexo)) +
-  geom_smooth(method=lm, fill="grey80") + #, se=FALSE) +
-  geom_point(shape=19, size=tamp, alpha=0.5) + # size=3
-  labs(x="Comprimento (mm)", y="N lamelas (média)") +
-  scale_color_manual(values=cor) +
-  theme_classic(base_size = tamt)
+r <- ggplot(dados, aes(x = Cpmm, y = lamelas.med, color = sexo)) +
+  geom_smooth(method = lm, fill = "grey80", se = TRUE) +
+  geom_point(shape = 19, size = tamp, alpha = 0.5) + # size=3
+  labs(x = "Body length (mm)", y = "Number of lamellae (mean)", color = "Sex") +
+  scale_color_manual(values = cor) +
+  theme_classic(base_size = tamt) +
+  #stat_regline_equation()
 
 r
-
 
 #savePlot("lamelaxcomp.tiff", type="tiff")
 
   ## boxplot
 #X11()
-ggplot(dados, aes(x=sexo, y=lamelas.med, fill=sexo)) + 
-geom_boxplot() +
-labs(y="N lamelas", x= "Sexo") +
-scale_fill_manual(values=cor) +
-theme_classic(base_size = tamt)
+ggplot(dados, aes(x = sexo, y = lamelas.med, fill = sexo)) + 
+  geom_boxplot() +
+  labs(y = "N lamelas", x = "Sexo") +
+  scale_fill_manual(values = cor) +
+  theme_classic(base_size = tamt)
 #savePlot("../resultados/lamelaxsexo.tiff", type="tiff")
 #dev.off()
 
-ggplot(dados, aes(x=sexo, y=Cpmm, fill=sexo)) + 
+ggplot(dados, aes(x = sexo, y = Cpmm, fill = sexo)) +
   geom_boxplot() +
-  labs(y="Comprimento", x= "Sexo") +
-  scale_fill_manual(values=cor) +
+  labs(y = "Comprimento", x = "Sexo") +
+  scale_fill_manual(values = cor) +
   theme_classic(base_size = tamt)
 
 ### graficos de densidade
 #X11()
-yplot <- ggplot(dados, aes(x=lamelas.med, fill=sexo)) +
-  labs(x="N lamelas", y= "Densidade") +
-  geom_density(alpha=0.8) +
-  scale_fill_manual(values=cor) +
+yplot <- ggplot(dados, aes(x = lamelas.med, fill = sexo)) +
+  labs(x = "N lamelas", y = "Densidade") +
+  geom_density(alpha = 0.8) +
+  scale_fill_manual(values = cor) +
   theme_classic(base_size = tamt)
 #savePlot("lamelaxsexo_densidade.tiff", type="tiff")
 
-xplot <- ggplot(dados, aes(x=Cpmm, fill=sexo)) +
-  labs(x="Comprimento (mm)", y= "Densidade") +
-  geom_density(alpha=0.8) +
-  scale_fill_manual(values=cor) +
+xplot <- ggplot(dados, aes(x = Cpmm, fill = sexo)) +
+  labs(x = "Comprimento (mm)", y = "Densidade") +
+  geom_density(alpha = 0.8) +
+  scale_fill_manual(values = cor) +
   theme_classic(base_size = tamt)
 
-xplot <- xplot + clean_theme()
-yplot <- yplot + clean_theme() + rotate()
+xplot <- xplot + clean_theme() +
+  labs(fill = "Sex") +
+  theme(legend.title = element_text(),
+        legend.text = element_text(color = "black"))
+yplot <- yplot + clean_theme() + rotate() 
+
+r
 
 #X11()
-#png("figures/all_graphics.png")
-ggarrange(xplot, NULL, r, yplot,  
-             ncol=2, nrow=2, align = "hv", 
-          widths = c(2, 1), heights = c(1, 2),
+png("figures/all_graphics.png", res = 300, 
+    height = 1600, width = 1800)
+ggarrange(xplot,
+          NULL,
+          r,
+          yplot,
+          ncol = 2,
+          nrow = 2,
+          align = "hv",
+          widths = c(2, 1),
+          heights = c(1, 2),
           common.legend = TRUE)
-#dev.off()
+dev.off()
 
-boxplot(dados$lamelas.med[dados$sexo=="M"])
-boxplot(dados$lamelas.med[dados$sexo=="F"])
+boxplot(dados$lamelas.med[dados$sexo == "M"])
+boxplot(dados$lamelas.med[dados$sexo == "F"])
 
 
-dados[dados$sexo=="M",]
+dados[dados$sexo == "M", ]
 #### testando com a maturacao ####
 
-m <- ggplot(dados, aes(x=maturacao, y=lamelas.med, color=sexo)) +
+m <- ggplot(dados, aes(x = maturacao, y = lamelas.med, color = sexo)) +
   #geom_smooth(method=lm, fill="grey80") + #, se=FALSE) +
   geom_boxplot() + # size=3
-  labs(x="Maturacao", y="N lamelas (média)") +
+  labs(x = "Maturacao", y = "N lamelas (média)") +
   #scale_color_manual(values=cor) +
   theme_classic(base_size = tamt)
 
 m
-
-
-
