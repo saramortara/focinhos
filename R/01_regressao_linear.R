@@ -18,7 +18,13 @@ library(gridExtra)
 library(ggpubr)
 
 ## lendo os dados
-dados <- read.csv("data/dados.csv", sep=';')
+dados <- read.csv("data/Dados.csv", sep = ';', dec = ",")
+names(dados)[names(dados) == "sexo"] <- "Sex"
+
+dim(dados)
+head(dados)
+
+length(unique(dados$exemplar))
 
 # inspecao dos dados
 head(dados) # seis primeiras linhas
@@ -46,22 +52,22 @@ boxplot(dados$Cpmm)
 head(dados)
 
 # mudando o PMF27 de femea para macho
-dados[dados$exemplar=="PMF27",4] <- "M"
+dados[dados$exemplar == "PMF27", 4] <- "M"
 # checando
-dados[dados$exemplar=="PMF27",4]
+dados[dados$exemplar == "PMF27", 4]
 
 # selecionando colunas
 # criando objeto com as colunas das lamelas
-lamelas <- dados[,c(2,3)]
+lamelas <- dados[, c(2, 3)]
 
 ## criando coluna com a media de N de lamelas
-dados$lamelas.med <- rowMeans(lamelas, na.rm=TRUE)
+dados$lamelas.med <- rowMeans(lamelas, na.rm = TRUE)
 
 head(dados)
 
 # olhando para o padrao dos daods
-plot(lamelas.med ~ Cpmm, data=dados, 
-     col=dados$sexo)
+plot(lamelas.med ~ Cpmm, data = dados, 
+     col = dados$sexo)
 
 # y ~ x1 + x2
 # lamelas ~ Cpmm + sexo
@@ -73,25 +79,27 @@ plot(lamelas.med ~ Cpmm, data=dados,
 ## fazendo os modelos 
 
 # hipotese nula
-m0 <- lm(lamelas.med ~ 1, data=dados) 
+m0 <- lm(lamelas.med ~ 1, data = dados) 
 # hipotese de que apenas sexo afeta N lamelas
-m1 <- lm(lamelas.med ~ sexo, data=dados)
+m1 <- lm(lamelas.med ~ sexo, data = dados)
 # hipotese do comprimento
-m2 <- lm(lamelas.med ~ Cpmm, data=dados)
+m2 <- lm(lamelas.med ~ Cpmm, data = dados)
 # hipotese do comprimento e sexo
-m3 <- lm(lamelas.med ~ sexo + Cpmm, data=dados)
+m3 <- lm(lamelas.med ~ sexo + Cpmm, data = dados)
 
 m0
 m1
 m2
 m3
 
-AICctab(m0, m1, m2, m3, weights=TRUE, base=TRUE)
+AICctab(m0, m1, m2, m3, weights = TRUE, base = TRUE)
 
 ### fazendo o grafico do resultado dos modelos com ggplot2
 
 ## definindo as cores
-cor <-  wes_palette("Darjeeling1", 2)[2:1]
+cores <-  wesanderson::wes_palette("Darjeeling1", 2)[2:1]
+cores # femea e macho
+
 ## tamanho do texto e numeros
 tamt <- 18
 ## tamanho dos pontos
@@ -99,71 +107,66 @@ tamp <- 3
 
 ### grafico do modelo
 #X11()
-r <- ggplot(dados, aes(x=Cpmm, y=lamelas.med, color=sexo)) +
-  geom_smooth(method=lm, fill="grey80") + #, se=FALSE) +
-  geom_point(shape=19, size=tamp, alpha=0.5) + # size=3
-  labs(x="Comprimento (mm)", y="N lamelas (média)") +
-  scale_color_manual(values=cor) +
-  theme_classic(base_size = tamt)
+
+r <- ggplot(dados, aes(x = Cpmm, y = lamelas.med, color = Sex)) +
+  geom_smooth(method = lm, fill = "grey80") + #, se=FALSE) +
+  geom_point(shape = 19,
+             size = tamp,
+             alpha = 0.5) + # size=3
+  labs(x = "Length (mm)", y = "Number of lamellae (mean)") +
+  scale_color_manual(values = cores) +
+  theme_classic(base_size = tamt) +
+  theme(legend.position = "top")
 
 r
+#ggsave("figures/regressao_comprimento_lamela.png")
 
+## boxplot
 
-#savePlot("lamelaxcomp.tiff", type="tiff")
-
-  ## boxplot
-#X11()
-ggplot(dados, aes(x=sexo, y=lamelas.med, fill=sexo)) + 
-geom_boxplot() +
-labs(y="N lamelas", x= "Sexo") +
-scale_fill_manual(values=cor) +
-theme_classic(base_size = tamt)
-#savePlot("../resultados/lamelaxsexo.tiff", type="tiff")
-#dev.off()
-
-ggplot(dados, aes(x=sexo, y=Cpmm, fill=sexo)) + 
+## boxplot das lamelas
+bp <- ggplot(dados, aes(x = Sex, y = lamelas.med, fill = Sex)) +
   geom_boxplot() +
-  labs(y="Comprimento", x= "Sexo") +
-  scale_fill_manual(values=cor) +
+  labs(y = "Number of lamellae (mean)", x = "Sex") +
+  scale_fill_manual(values = cores) +
   theme_classic(base_size = tamt)
+
+bp
+#ggsave("figures/boxplot_lamela.png")
+
 
 ### graficos de densidade
 #X11()
-yplot <- ggplot(dados, aes(x=lamelas.med, fill=sexo)) +
-  labs(x="N lamelas", y= "Densidade") +
-  geom_density(alpha=0.8) +
-  scale_fill_manual(values=cor) +
+yplot <- ggplot(dados, aes(x = lamelas.med, fill = Sex)) +
+  labs(x = "Number of lamellae", y = "Density") +
+  geom_density(alpha = 0.8) +
+  scale_fill_manual(values = cores) +
   theme_classic(base_size = tamt)
 #savePlot("lamelaxsexo_densidade.tiff", type="tiff")
 
-xplot <- ggplot(dados, aes(x=Cpmm, fill=sexo)) +
-  labs(x="Comprimento (mm)", y= "Densidade") +
-  geom_density(alpha=0.8) +
-  scale_fill_manual(values=cor) +
+xplot <- ggplot(dados, aes(x = Cpmm, fill = Sex)) +
+  labs(x = "Length (mm)", y = "Density") +
+  geom_density(alpha = 0.8) +
+  scale_fill_manual(values = cores) +
   theme_classic(base_size = tamt)
 
-xplot <- xplot + clean_theme()
-yplot <- yplot + clean_theme() + rotate()
-
-#X11()
-#png("figures/all_graphics.png")
-ggarrange(xplot, NULL, r, yplot,  
-             ncol=2, nrow=2, align = "hv", 
-          widths = c(2, 1), heights = c(1, 2),
-          common.legend = TRUE)
-#dev.off()
-
-boxplot(dados$lamelas.med[dados$sexo=="M"])
-boxplot(dados$lamelas.med[dados$sexo=="F"])
+xplot <- xplot + theme_void()
+yplot <- yplot + theme_void() + coord_flip()
 
 
-dados[dados$sexo=="M",]
+ggarrange(#xplot, NULL, r, yplot,  
+  r, yplot,
+  ncol = 2, nrow = 1, align = "hv", 
+  widths = c(2, 1), #heights = c(1, 2),
+  common.legend = TRUE)
+
+#ggsave("figures/all_graphics.png")
+
 #### testando com a maturacao ####
 
-m <- ggplot(dados, aes(x=maturacao, y=lamelas.med, color=sexo)) +
+m <- ggplot(dados, aes(x = maturacao, y = lamelas.med, color = sexo)) +
   #geom_smooth(method=lm, fill="grey80") + #, se=FALSE) +
   geom_boxplot() + # size=3
-  labs(x="Maturacao", y="N lamelas (média)") +
+  labs(x = "Maturacao", y = "N lamelas (média)") +
   #scale_color_manual(values=cor) +
   theme_classic(base_size = tamt)
 
