@@ -119,7 +119,8 @@ bp <- ggplot(dados, aes(x = Sex, y = lamelas.med, fill = Sex)) +
   geom_boxplot() +
   labs(y = "Number of lamellae (mean)", x = "Sex") +
   scale_fill_manual(values = cores) +
-  theme_classic(base_size = tamt)
+  theme_classic(base_size = tamt) +
+  theme(legend.position = "none")
 
 bp
 #ggsave("figures/boxplot_lamela.png")
