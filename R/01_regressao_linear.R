@@ -1,11 +1,6 @@
 ##### Testando diferenca de N de lamelas entre machos e femeas
 ## codigo por Sara Mortara, 1a versao em 20.01.2019
-## atualizado em 17.03
- 
-# # checando o diretorio de trabalho
-# getwd()
-# # deve estar na pasta de analise de dados, se nao estiver ai sim?
-# setwd("C:/Users/morei/OneDrive/Documentos/narinas/analise_dados/R")
+## abrir o arquivo .Rproj e seguir este codigo
 
 ## carregando os pacotes
 # se nao tiver os pacotes usar:
@@ -24,13 +19,6 @@ names(dados)[names(dados) == "sexo"] <- "Sex"
 dim(dados)
 head(dados)
 
-length(unique(dados$exemplar))
-
-# inspecao dos dados
-head(dados) # seis primeiras linhas
-
-names(dados)[1] <- "exemplar"
-
 # sumario dos dados
 summary(dados)
 
@@ -48,6 +36,8 @@ table(dados$maturacao, dados$sexo)
 hist(dados$Cpmm)
 plot(density(dados$Cpmm))
 boxplot(dados$Cpmm)
+
+summary(dados)
 
 head(dados)
 
@@ -94,6 +84,8 @@ m3
 
 AICctab(m0, m1, m2, m3, weights = TRUE, base = TRUE)
 
+summary(m3)
+
 ### fazendo o grafico do resultado dos modelos com ggplot2
 
 ## definindo as cores
@@ -107,7 +99,6 @@ tamp <- 3
 
 ### grafico do modelo
 #X11()
-
 r <- ggplot(dados, aes(x = Cpmm, y = lamelas.med, color = Sex)) +
   geom_smooth(method = lm, fill = "grey80") + #, se=FALSE) +
   geom_point(shape = 19,
@@ -161,7 +152,7 @@ ggarrange(#xplot, NULL, r, yplot,
 
 #ggsave("figures/all_graphics.png")
 
-#### testando com a maturacao ####
+### testando com a maturacao ####
 
 m <- ggplot(dados, aes(x = maturacao, y = lamelas.med, color = sexo)) +
   #geom_smooth(method=lm, fill="grey80") + #, se=FALSE) +
@@ -171,6 +162,3 @@ m <- ggplot(dados, aes(x = maturacao, y = lamelas.med, color = sexo)) +
   theme_classic(base_size = tamt)
 
 m
-
-
-
