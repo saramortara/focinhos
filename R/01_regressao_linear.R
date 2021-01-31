@@ -30,7 +30,7 @@ dados$maturacao <- as.factor(dados$maturacao)
 
 summary(dados$maturacao)
 
-table(dados$maturacao, dados$sexo)
+table(dados$maturacao, dados$Sex)
 
 # graficos para olhar a distribuicao dos dados
 hist(dados$Cpmm)
@@ -57,25 +57,25 @@ head(dados)
 
 # olhando para o padrao dos daods
 plot(lamelas.med ~ Cpmm, data = dados, 
-     col = dados$sexo)
+     col = dados$Sex)
 
 # y ~ x1 + x2
-# lamelas ~ Cpmm + sexo
+# lamelas ~ Cpmm + Sex
 # y= a + bx1 + cx2
 # y = variavel resposta, N de lamelas
 # x = variavel preditora
 # x1 = comprimento
-# x2 = sexo
+# x2 = Sex
 ## fazendo os modelos 
 
 # hipotese nula
 m0 <- lm(lamelas.med ~ 1, data = dados) 
-# hipotese de que apenas sexo afeta N lamelas
-m1 <- lm(lamelas.med ~ sexo, data = dados)
+# hipotese de que apenas Sex afeta N lamelas
+m1 <- lm(lamelas.med ~ Sex, data = dados)
 # hipotese do comprimento
 m2 <- lm(lamelas.med ~ Cpmm, data = dados)
-# hipotese do comprimento e sexo
-m3 <- lm(lamelas.med ~ sexo + Cpmm, data = dados)
+# hipotese do comprimento e Sex
+m3 <- lm(lamelas.med ~ Sex + Cpmm, data = dados)
 
 m0
 m1
@@ -110,7 +110,7 @@ r <- ggplot(dados, aes(x = Cpmm, y = lamelas.med, color = Sex)) +
   theme(legend.position = "top")
 
 r
-#ggsave("figures/regressao_comprimento_lamela.png")
+ggsave("figures/regressao_comprimento_lamela.tiff")
 
 ## boxplot
 
@@ -123,7 +123,7 @@ bp <- ggplot(dados, aes(x = Sex, y = lamelas.med, fill = Sex)) +
   theme(legend.position = "none")
 
 bp
-#ggsave("figures/boxplot_lamela.png")
+ggsave("figures/boxplot_lamela.tiff")
 
 
 ### graficos de densidade
@@ -133,7 +133,7 @@ yplot <- ggplot(dados, aes(x = lamelas.med, fill = Sex)) +
   geom_density(alpha = 0.8) +
   scale_fill_manual(values = cores) +
   theme_classic(base_size = tamt)
-#savePlot("lamelaxsexo_densidade.tiff", type="tiff")
+#savePlot("lamelaxSex_densidade.tiff", type="tiff")
 
 xplot <- ggplot(dados, aes(x = Cpmm, fill = Sex)) +
   labs(x = "Length (mm)", y = "Density") +
@@ -151,15 +151,15 @@ ggarrange(#xplot, NULL, r, yplot,
   widths = c(2, 1), #heights = c(1, 2),
   common.legend = TRUE)
 
-#ggsave("figures/all_graphics.png")
+ggsave("figures/all_graphics.tiff")
 
 ### testando com a maturacao ####
 
-m <- ggplot(dados, aes(x = maturacao, y = lamelas.med, color = sexo)) +
+m <- ggplot(dados, aes(x = maturacao, y = lamelas.med, color = Sex)) +
   #geom_smooth(method=lm, fill="grey80") + #, se=FALSE) +
   geom_boxplot() + # size=3
   labs(x = "Maturacao", y = "N lamelas (média)") +
   #scale_color_manual(values=cor) +
   theme_classic(base_size = tamt)
 
-m
+table(dados$maturacao, dados$Sex)

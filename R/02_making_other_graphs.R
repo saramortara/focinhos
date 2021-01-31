@@ -14,7 +14,7 @@ l.centr <- read.delim("data/LATERAL_CS_Combined dataset lateral TOTAL, averaged 
 head(d.centr)
 
 # excluir um macho com erro
-which(d.centr$Centroid.Size > 24)
+remover <- which(d.centr$Centroid.Size > 24)
 
 # dados de regressao
 d.reg <- read.delim("data/Regression alometria, results.txt", 
@@ -37,10 +37,8 @@ l.df <- data.frame(sexo = ifelse(l.reg$sexo == "f", "female", "male"),
                    x = l.centr$Centroid.Size)
 
 
-d.df <- d.df[-38, ]
-
-
-d.reg$Id[38]
+# exclundo o macho com erro
+d.df <- d.df[-remover, ]
 
 ## tamanho do texto e numeros
 tamt <- 18
@@ -69,20 +67,12 @@ l.plotreg <- ggplot(l.df, aes(x = x, y = y, color = sexo)) +
 
 l.plotreg
 
-
-
-png("figures/lateral_pca.png", res = 300, 
-    height = 1200, width = 1600)
-plot.pca.l
-dev.off()png("figures/dorsal_regression.png", res = 300, 
-    height = 1200, width = 1600)
 d.plotreg
-dev.off()
+ggsave("figures/dorsal_regression.tiff")
 
-png("figures/lateral_regression.png", res = 300, 
-    height = 1200, width = 1600)
 l.plotreg
-dev.off()
+ggsave("figures/lateral_regression.tiff")
+
 
 #### 2. PCA ####
 pca.d <- read.delim("data/PCA_dorsal.txt")
@@ -115,11 +105,12 @@ plot.pca.l <- ggplot(pca.l, aes(x = PC1, y = PC2, color = sexo)) +
 plot.pca.d
 plot.pca.l
 
+# pca.l[pca.l$Id == "m19", ]
+# pca.l[38, ]
 
-pca.l[pca.l$Id == "m19",]
-pca.l[38,]
-
-png("figures/dorsal_pca.png", res = 300, 
-    height = 1200, width = 1600)
 plot.pca.d
-dev.off()
+ggsave("figures/dorsal_pca.tiff")
+
+plot.pca.l
+ggsave("figures/lateral_pca.tiff")
+
