@@ -5,12 +5,12 @@
 # 1. arregando os pacotes ------------------------------------------------------
 # se nao tiver os pacotes usar:
 # install.packages("wesanderson")
-library(wesanderson) # para paleta de cores
 library(bbmle) # para AICctab
 # pacotes graficos
 library(ggplot2)
 library(gridExtra)
 library(ggpubr)
+library(wesanderson) # para paleta de cores
 
 # 2. Lendo e ajustando os dados ------------------------------------------------
 ## lendo os dados
@@ -90,7 +90,7 @@ r <- ggplot(dados, aes(x = Cpmm, y = lamelas.med, color = Sex)) +
              size = tamp,
              alpha = 0.5) + # size=3
   labs(x = "Length (mm)", y = "Number of lamellae (mean)") +
-  scale_color_manual(values = cores) +
+  scale_color_manual(values = cores, name = "", labels = c("Female", "Male")) +
   theme_classic(base_size = tamt) +
   theme(legend.position = "top")
 
