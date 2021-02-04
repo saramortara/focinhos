@@ -89,7 +89,7 @@ r <- ggplot(dados, aes(x = Cpmm, y = lamelas.med, color = Sex)) +
   geom_point(shape = 19,
              size = tamp,
              alpha = 0.5) + # size=3
-  labs(x = "Length (mm)", y = "Number of lamellae (mean)") +
+  labs(x = "Standard length (mm)", y = "Number of lamellae (mean)") +
   scale_color_manual(values = cores, name = "", labels = c("Female", "Male")) +
   theme_classic(base_size = tamt) +
   theme(legend.position = "top")
@@ -139,13 +139,13 @@ legend <- get_legend(r)
 # 4.4. Juntando os graficos em um mesmo painel 
 ggarrange(xplot, NULL, r, yplot,  
           #r, yplot,
-          ncol = 2, nrow = 2, #align = "h", 
-          widths = c(2.2, .8), heights = c(.8, 2.2),
+          ncol = 2, nrow = 2, #align = "hv", 
+          widths = c(2.2, .3), heights = c(.5, 2.2),
           common.legend = TRUE, 
           legend.grob = legend)
 
 # Salvando o gráfico, para salvar descomentar L 148
-#ggsave("figures/all_graphics.tiff")
+ggsave("figures/all_graphics.tiff", width = 180, height = 130, units = "mm")
 
 ### testando com a maturacao ####
 
