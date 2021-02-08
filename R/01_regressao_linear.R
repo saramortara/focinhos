@@ -39,8 +39,7 @@ lamelas <- dados[, c(2, 3)]
 dados$lamelas.med <- rowMeans(lamelas, na.rm = TRUE)
 
 # olhando para o padrao dos daods
-plot(lamelas.med ~ Cpmm, data = dados, 
-     col = as.factor(dados$Sex))
+plot(lamelas.med ~ Cpmm, data = dados, col = as.factor(dados$Sex))
 
 # 3. Ajuste dos modelos --------------------------------------------------------
 # y ~ a + bx
@@ -56,16 +55,18 @@ plot(lamelas.med ~ Cpmm, data = dados,
 dados$Sex <- as.factor(dados$Sex)
 
 # Ajuste dos modelos:
-# 0. hipotese nula
-m0 <- lm(lamelas.med ~ 1, data = dados) 
+# Hipoteses de 1 a 3 - dimorfismo
 # 1. hipotese de que apenas Sex afeta N lamelas
 m1 <- lm(lamelas.med ~ Sex, data = dados)
-# 2. hipotese do comprimento
-m2 <- lm(lamelas.med ~ Cpmm, data = dados)
-# 3. hipotese do comprimento e Sex
-m3 <- lm(lamelas.med ~ Sex + Cpmm, data = dados)
-# 4. hipotese da interação entre comprimento e Sex
-m4 <- lm(lamelas.med ~ Sex * Cpmm, data = dados)
+# 2. hipotese do comprimento e Sex
+m2 <- lm(lamelas.med ~ Sex + Cpmm, data = dados)
+# 3. hipotese da interação entre comprimento e Sex
+m3 <- lm(lamelas.med ~ Sex * Cpmm, data = dados)
+# Hipoteses nulas
+# 4. hipotese do comprimento
+m4 <- lm(lamelas.med ~ Cpmm, data = dados)
+# 5. hipotese nula
+m0 <- lm(lamelas.med ~ 1, data = dados) 
 
 # Selecao de modelos usando o AICc (AIC corrido para pequenas amostras)
 AICctab(m0, m1, m2, m3, m4, weights = TRUE, base = TRUE)
